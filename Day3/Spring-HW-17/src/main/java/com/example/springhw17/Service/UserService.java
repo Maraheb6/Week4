@@ -1,0 +1,88 @@
+package com.example.springhw17.Service;
+
+import com.example.springhw17.Exception.ApiException;
+import com.example.springhw17.Model.User;
+import com.example.springhw17.Repository.UserReopsitory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class UserService {
+    private final UserReopsitory userReopsitory;
+
+    public List<User> getUser(){
+        return userReopsitory.findAll();
+    }
+
+    public void addUser(User user){
+    userReopsitory.save(user);
+    }
+
+    public boolean updateUser(Integer id,User user){
+        User oldUser=userReopsitory.findByMyId(id);
+        //findUserById(id)
+        if(oldUser==null){
+           return false;
+        }
+      oldUser.setName(user.getName());
+        oldUser.setUsername(user.getUsername());
+        oldUser.setPassword(user.getPassword());
+        oldUser.setEmail(user.getEmail());
+        oldUser.setRole(user.getRole());
+        oldUser.setAge(user.getAge());
+        userReopsitory.save(oldUser);
+        return true;
+    }
+
+    public boolean deleteUser(Integer id){
+        User oldUser=userReopsitory.findUserById(id);
+        if(oldUser==null){
+            return false;
+        }
+        userReopsitory.delete(oldUser);
+        return true;
+    }
+
+    public User findByUsername(String username){
+        User user=userReopsitory.findUserByUsername(username);
+        if(user==null){
+            throw  new ApiException("username not found");
+        }
+        return user;
+    }
+
+    public User findByUsernameAndPassword(String username,String password){
+        User user=userReopsitory.findUserByUsernameAndPassword(username,password);
+        if(user==null){
+            throw new ApiException("not correct username or password");
+        }
+        return user;
+    }
+
+    public User findByEmail(String email){
+        User user=userReopsitory.findUserByEmail(email);
+        if(user==null){
+            throw new ApiException("Email Not Found");
+        }
+        return user;
+    }
+
+    public  List<User> findAllByRole(String role){
+        List<User> users=userReopsitory.findAllUserByRole(role);
+        if(users==null){
+            throw new ApiException(("Role Not Found"));
+        }
+        return users;
+    }
+
+    public List<User> findByAge(Integer age){
+        List<User>users=userReopsitory.findAllByAgeGreaterThanEqual(age);
+        if(users==null){
+            throw new ApiException("Age Not Found");
+        }
+        return users;
+    }
+}
